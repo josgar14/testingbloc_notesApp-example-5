@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:testingbloc_course/apis/login_api.dart';
 import 'package:testingbloc_course/apis/notes_api.dart';
 import 'package:testingbloc_course/bloc/actions.dart';
@@ -8,10 +9,12 @@ import 'package:testingbloc_course/models.dart';
 class AppBloc extends Bloc<AppAction, AppState> {
   final LoginApiProtocol loginApi;
   final NotesApiProtocol notesApi;
+  final LoginHandle acceptedLoginHandle;
 
   AppBloc({
     required this.loginApi,
     required this.notesApi,
+    required this.acceptedLoginHandle,
   }) : super(
           const AppState.empty(),
         ) {
@@ -53,7 +56,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
         );
         //get the login handle
         final loginHandle = state.loginHandle;
-        if (loginHandle != const LoginHandle.fooBar()) {
+        if (loginHandle != acceptedLoginHandle) {
           emit(
             AppState(
               isLoading: false,
@@ -64,7 +67,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
           );
           return;
         }
-        // we have a valid login hadle and want to fetch notes
+        // we have a valid login handle and want to fetch notes
         final notes = await notesApi.getNotes(loginHandle: loginHandle!);
 
         emit(
